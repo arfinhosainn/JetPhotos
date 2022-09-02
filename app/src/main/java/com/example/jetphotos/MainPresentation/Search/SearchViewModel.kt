@@ -1,6 +1,7 @@
-package com.example.jetphotos.presentation.image_list
+package com.example.jetphotos.MainPresentation.Search
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
