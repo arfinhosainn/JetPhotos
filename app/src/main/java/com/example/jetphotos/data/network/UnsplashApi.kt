@@ -5,6 +5,7 @@ import com.example.jetphotos.data.dto.SearchResult
 import com.example.jetphotos.data.dto.Unsplash
 import retrofit2.http.GET
 import retrofit2.http.Headers
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface UnsplashApi {
@@ -23,5 +24,12 @@ interface UnsplashApi {
         @Query("query") query: String,
         @Query("per_page") per_page: Int,
     ): SearchResult
+
+
+    @Headers("Authorization: Client-ID ${BuildConfig.API_KEY}")
+    @GET("photos/{id}")
+    suspend fun getPhotoById(
+        @Path("id") id: String
+    ): Unsplash
 
 }

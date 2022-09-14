@@ -11,7 +11,10 @@ import com.example.jetphotos.data.dto.Unsplash
 import com.example.jetphotos.data.network.UnsplashApi
 import com.example.jetphotos.domain.repository.UnsplashRepository
 import com.example.jetphotos.util.Constants.ITEM_PER_PAGE
+import com.example.jetphotos.util.Resource
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class UnsplashRepositoryImpl @Inject constructor(
@@ -19,30 +22,45 @@ class UnsplashRepositoryImpl @Inject constructor(
     private val db: PhotosDatabase
 ) : UnsplashRepository {
     @OptIn(ExperimentalPagingApi::class)
-    override fun getImages():  Flow<PagingData<Unsplash>> {
-        return Pager(
-            config = PagingConfig(
-                pageSize = ITEM_PER_PAGE
-            ),
-            remoteMediator = PhotoRemoteMediator(
-                api = api,
-                db = db
-            ),
+    override fun getListOfImages(): Flow<PagingData<Unsplash>> {
+        return Pager(config = PagingConfig(
+            pageSize = ITEM_PER_PAGE,
+        ), remoteMediator = PhotoRemoteMediator(
+            api = api,
+            db = db
+        ),
             pagingSourceFactory = {
                 db.unsplashPhotoDao.getAllImages()
             }
         ).flow
     }
 
-    fun searchImages(query: String): Flow<PagingData<Unsplash>>{
+
+    override fun getPhotoById(id: String): Flow<Resource<Unsplash>> = flow {
+        emit(Resource.Loading())
+        try {
+            val image = api.getPhotoById(id = id)
+            emit(Resource.Success(image))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.localizedMessage ?: "Error"))
+        }
+    }
+
+    fun searchImages(query: String): Flow<PagingData<Unsplash>> {
         return Pager(
             config = PagingConfig(
                 pageSize = 10
             ), pagingSourceFactory = {
-                SearchPagingSource(api = api,query = query)
+                SearchPagingSource(api = api, query = query)
             }
         ).flow
     }
 
-
 }
+
+
+
+
+
+
+
